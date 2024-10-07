@@ -9,7 +9,6 @@ from transformers import PreTrainedTokenizerBase
 
 EOT_TOKEN = "<turn_end>"
 
-
 class instruct_lm_preprocessor():
     def __init__(
         self,
