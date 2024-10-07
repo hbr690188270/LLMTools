@@ -16,23 +16,22 @@ class instruct_lm_preprocessor():
         tokenizer: PreTrainedTokenizerBase,
         max_len: int,
         eot_id: int,
+        prepend_eos: bool = False,
     ) -> None:
         """
         Apply chat template to the conversation between a user and the assistant.
-        This chat template is:
-        system\nA conversation between a user and a helpful
-        assistant.<turn_end> user\n[user message]<turn_end> assistant\n
-        [assistant message]<turn_end>
 
         Args:
             texts: the message from user and assistant.
             roles: the sources of the messages in `texts`, where 0 means human and 1 means assistant.
             max_len: the maximum length of the processed text.
             eot_id: the token id of the <turn_end> token.
+            prepend_eos: whether prepend an eos token to the processed text.
         """
         self.tokenizer = tokenizer
         self.max_len = max_len
         self.eot_id = eot_id
+        self.prepend_eos = prepend_eos
 
         encoded_eot_id = self.tokenizer.encode(EOT_TOKEN, add_special_tokens=False)[0]
         assert encoded_eot_id == self.eot_id, f"{encoded_eot_id} != {self.eot_id}"
@@ -103,7 +102,7 @@ class instruct_lm_preprocessor():
 
         for idx in range(0, len(texts), 2):
             user_text = texts[idx]
-            assistant_text = texts[idx]
+            assistant_text = texts[idx + 1]
             assert roles[idx] == 0
             assert roles[idx + 1] == 1
 
